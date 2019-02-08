@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+  <head>
+    <title>diskmon</title>
+    <meta charset="utf-8">
+    <style>
+      body {
+        background-color: #000;
+        color: #777;
+      }
+      h1 {
+        text-align: center;
+        border-bottom: 5px solid #55ab55;
+      }
+      h2 {
+        margin: 0;
+        display: inline-block;
+        border-bottom: 3px solid #232366;
+      }
+      table {
+        font-family: monospace;
+        border-collapse: collapse;
+      }
+      table tr th small {
+        font-size: 0.7em;
+      }
+      table thead th{
+        line-height: 0.7em;
+        padding-bottom: 3px;
+      }
+      table thead th small {
+        /* col header */
+        padding: 0 5px 0px 5px;
+      }
+      table tbody th small {
+        /* row header */
+        padding: 0 10px 0 10px;
+      }
+      table td {
+        background-color: #0e0e0e;
+        border: 1px solid #222;
+        padding: 0;
+        width: 75px;
+        text-align: center;
+      }
+      table td.alert {
+        background-color: #991010;
+        color: #bbb;
+        font-weight: bold;
+      }
+      .thead-limit {
+        font-weight: normal;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>diskmon</h1>
+    [%# FOREACH disk IN data.pairs %]
+      [%# disk.key %]
+      [%# FOREACH entry IN disk.value.status %]
+        [%# entry.date %]
+      [%# END %]
+    [%# END %]
+    [% FOREACH disk IN data.pairs %]
+      <p>Disk: <strong>[% disk.key %]</strong></p>
+      <h2>usage</h2>
+      <div id="usage-box">
+        [%# FOREACH part IN usage. %]
+        <canvas id="usage-canvas-[% pair.key FILTER remove('\/') %]"></canvas>
+      </div>
+      <h2>status</h2>
+      <table>
+        <thead>
+          <th></th>
+          [% FOREACH field IN config.status.fields %]
+            <th><small class="thead">[% field.label %]
+              <span class="thead-limit">(Limit: [% field.limit %])</span>
+            </small></th>
+          [% END %]
+        </thead>
+        <tbody>
+        [% FOREACH entry IN disk.value.status.reverse %]
+          <tr>
+            <th><small>[% entry.date %]</small></th>
+            [% FOREACH field IN entry.fields %]
+              [% IF field.alert == 'ALERT' %]
+                <td class="alert">&#9888; [% field.value %] &#9888;</td>
+              [% ELSIF field.value == 'no data found' %]
+                <td>-</td>
+              [% ELSE %]
+                <td>[% field.value %]</td>
+              [% END %]
+            [% END %]
+          </tr>
+        [% END %]
+        </tbody>
+      </table>
+    [% END %]
+    <script>
+    const usage_data = [% usage_json %];
+    //console.log(usage_data["/dev/sda"][0]);
+    const dev = "/dev/sda";
+    const dev_id = dev.replace(/\//g, '');
+    const canv_base_id = 'usage-canvas-' + dev_id;
+    console.log(canv_base_id);
+    </script>
+  </body>
+</html>
