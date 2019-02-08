@@ -239,18 +239,18 @@
     #     data...
     #   }
     # ]
-    my %data = ();
-    foreach (@{$config->{disks}}) {
-      my @parts = ();
-      my $diskdata = {
-        status => $status->{$_},
-        usage => {
-          parts => \@parts,
-          json => encode_json $usage->{$_}
-        }
-      };
-      $data{$_} = $diskdata;
-    }
+    # my %data = ();
+    # foreach (@{$config->{disks}}) {
+    #   my @parts = ();
+    #   my $diskdata = {
+    #     status => $status->{$_},
+    #     usage => {
+    #       parts => \@parts,
+    #       json => encode_json $usage->{$_}
+    #     }
+    #   };
+    #   $data{$_} = $diskdata;
+    # }
     #print STDERR Dumper(\%data);
 
     my $res;
@@ -258,12 +258,12 @@
     $tt->process(
     "mytemplate.html.tt",
     {
-      disks => $config->{disks},
-      result => $res,
-      config => $config,
-      status => $status,
-      usage_json => $usage_json,
-      data => \%data,
+      # disks => $config->{disks},
+      # result => $res,
+      # config => $config,
+      # status => $status,
+      # usage_json => $usage_json,
+      # data => \%data,
     },
     \$out,
     ) or die $tt->error;

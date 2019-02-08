@@ -6,7 +6,7 @@ package MyConfig;
 use strict;
 use warnings;
 
-our $config = {
+our $config2 = {
   disks => [ '/dev/sda', '/dev/sdb' ],
   #data_file => 'diskdat.txt',
   status => {
@@ -35,9 +35,10 @@ our $config = {
   }
 };
 
-our $config2 = [
+# list of blockdevices w/ respective parameters
+our @config = (
   {
-    name => '/dev/sda'
+    name => '/dev/sda',
     status => {
       data_file => 'statusdat1.txt',
       # the fields order matter for the file it's written to!!!
@@ -48,24 +49,24 @@ our $config2 = [
           limit => 5
         },
         {
-          label => 'Airflow Temp. Cel.',
-          name => 'Airflow_Temperature_Cel',
-          limit => 37
-        },
-        {
           label => 'Curr. Pend. Sect.',
           name => 'Current_Pending_Sector',
           limit => 5
+        },
+        {
+          label => 'Airflow Temp. Cel.',
+          name => 'Airflow_Temperature_Cel',
+          limit => 37
         },
       ]
     },
     usage => {
       data_file => 'usagedat1.txt',
-      parts => [ '/root', '/var', '/home' ]
+      parts => [ '/dev/sda1', '/dev/sda2', '/dev/sda4' ] # /, /var, /home
     },
   },
   {
-    name => '/dev/sdb'
+    name => '/dev/sdb',
     status => {
       data_file => 'statusdat2.txt',
       # the fields order matter for the file it's written to!!!
@@ -92,6 +93,6 @@ our $config2 = [
       parts => [ '/root', '/var', '/home' ]
     },
   }
-]
+);
 
 1;
