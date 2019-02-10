@@ -49,7 +49,7 @@ sub scan_usage {
   my $data = "";
   foreach (split(/\n/, $res)) {
     foreach my $part (@{$dev->{usage}->{parts}}) {
-      if (/^$part/) {
+      if (/^$part->{dev}/) {
         #print $_ . "\n";
         my @tmp = split(' ', $_);
         my $datline = "|" . $tmp[5] . "|" . $tmp[1] . "|" . $tmp[2];

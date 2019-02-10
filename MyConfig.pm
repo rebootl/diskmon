@@ -62,7 +62,20 @@ our @config = (
     },
     usage => {
       data_file => 'usagedat1.txt',
-      parts => [ '/dev/sda1', '/dev/sda2', '/dev/sda4' ] # /, /var, /home
+      parts => [
+        {
+          dev => '/dev/sda1',
+          mountpoint => '/'
+        },
+        {
+          dev => '/dev/sda2',
+          mountpoint => '/var'
+        },
+        {
+          dev => '/dev/sda4',
+          mountpoint => '/home'
+        },
+      ]
     },
   },
   {
