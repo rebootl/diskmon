@@ -52,93 +52,103 @@
     }
   }
 
-  # sub load_status {
-  #   my $self = shift;
-  #   # -> maybe use try here
-  #   open FH, '<', $config->{status}->{data_file}
-  #     or die "Could not open file '$config->{status}->{data_file}' $!";
-  #   # data structure:
-  #   # $status = {
-  #   #   /dev/sda => [
-  #   #     { date => ..,
-  #   #       fields => [
-  #   #         { value => <v1>,
-  #   #           limit => <l1> },
-  #   #           ..
-  #   #       ]
-  #   #     },
-  #   #     ..
-  #   #   ],
-  #   #   /dev/sdb => [
-  #   #     ..
-  #   #   ]
-  #   # }
-  #   my $status = {};
-  #   foreach (@{$config->{disks}}) {
-  #     @{$status}{$_} = [];
-  #   }
-  #   while (my $row = <FH>) {
-  #     chomp $row;
-  #     foreach (@{$config->{disks}}) {
-  #       my @tmp = split(/\|/, $row);
-  #       if ($tmp[0] eq $_) {
-  #         shift @tmp;
-  #         my $newhash = { date => shift @tmp };
-  #         my @fields = ();
-  #         foreach (@{$config->{status}->{fields}}) {
-  #           my $value = shift @tmp;
-  #           my $alert = '';
-  #           if ($value eq "no data found") {
-  #             $alert = 'OK';
-  #           } else {
-  #             if ($value >= $_->{'limit'}) {
-  #               $alert = 'ALERT';
-  #             } else {
-  #               $alert = 'OK';
-  #             }
-  #           }
-  #           push @fields, {
-  #             value => $value,
-  #             alert => $alert
-  #           };
-  #           @{$newhash}{fields} = \@fields;
-  #         }
-  #         #print STDERR Dumper($newhash);
-  #         push @{$status->{$_}}, $newhash;
-  #       }
-  #     }
-  #     #print STDERR Dumper($status);
-  #   }
-  #   close FH;
-  #   return $status;
-  # }
-
   sub load_usage {
     my $self = shift;
     my $dev = shift;
-    print STDERR Dumper($dev);
-    open FH, '<', $dev->{usage}->{data_file}
-      or die "Could not open file '$dev->{usage}->{data_file}' $!";
+    #print STDERR Dumper($dev);
+    # -> try block here would kinda make sense
+    open FH, '<', $dev->{usage}->{data_file} or return {};
+      #print STDERR "Could not open file '$dev->{usage}->{data_file}' $!";
+      #return {};
+    #}
+      #or die "Could not open file '$dev->{usage}->{data_file}' $!";
     # improved data struct.:
     # $usage = {
-    #   /dev/sda => {
     #     dates = [ date1, date2, date3, date4, ... ],
-    #     parts = {
-    #       '/' = {
+    #     parts = [
+    #       {
+    #         name = '/',
     #         size = [ s1, s2, s3, s4, ... ],
     #         usage = [ d1, d2, d3, d4, ... ]
-    #        },
-    #       '/var' = {
-    #         ...
-    #        }
-    #     }
-    #   ...
-    #   }
+    #       },
+    #       ...
+    #     ]
     # }
+    # (preparing data structure)
+    my @dates = ();
+    my @parts = ();
+    foreach (@{$dev->{usage}->{parts}}) {
+      push @parts, {
+        name => $_->{mountpoint},
+        size => [],
+        usage => []
+      };
+    }
     while (my $row = <FH>) {
       chomp $row;
       my @tmp = split(/\|/, $row);
+      push @dates, shift @tmp;
+      foreach (@parts) {
+        shift @tmp;
+        push @{$_->{size}}, shift @tmp;
+        push @{$_->{usage}}, shift @tmp;
+      }
     }
+    my $usage = {
+      dates => \@dates,
+      parts => \@parts
+    };
+    print STDERR Dumper($usage);
+  }
+
+  sub load_status {
+    my $self = shift;
+    my $dev = shift;
+    # -> maybe use try here
+    open FH, '<', $dev->{status}->{data_file}
+      or return {};
+      #or die "Could not open file '$config->{status}->{data_file}' $!";
+    # data structure:
+    # $status = [
+    #   { date => ..,
+    #     fields => [
+    #       { value => <v1>,
+    #         limit => <l1> },
+    #          ..
+    #     ]
+    #   },
+    #   ..
+    # ]
+    my @status = ();
+    while (my $row = <FH>) {
+      chomp $row;
+      my @tmp = split(/\|/, $row);
+      my $newhash = { date => shift @tmp };
+      foreach (@{$dev->{status}->{fields}}) {
+        my @fields = ();
+        my $value = shift @tmp;
+        my $alert = '';
+        if ($value eq "no data found") {
+          $alert = 'OK';
+        } else {
+          if ($value >= $_->{'limit'}) {
+            $alert = 'ALERT';
+          } else {
+            $alert = 'OK';
+          }
+        }
+        push @fields, {
+          value => $value,
+          alert => $alert
+        };
+        @{$newhash}{fields} = \@fields;
+      }
+      #print STDERR Dumper($newhash);
+      push @status, $newhash;
+    }
+    print STDERR Dumper(\@status);
+    close FH;
+    return \@status;
   }
 
   sub myresp {
@@ -146,25 +156,25 @@
     my $cgi = shift;
     return if !ref $cgi;
 
-    # my $status = $self->load_status();
-
     my @data = ();
     foreach my $dev (@config) {
       #print STDERR Dumper($dev);
       my $usage = $self->load_usage($dev);
-      #my $status = load_status($status);
+      my $status = $self->load_status($dev);
       push @data, {
         usage => $usage,
-        #status => $status,
+        status => $status,
       };
     }
+
+    #my $usage_json ....
 
     my $res;
     my $out = $cgi->header();
     $tt->process(
     "mytemplate.html.tt",
     {
-      config => $config,
+      config => \@config,
       data => \@data,
       # -> data json
     },
