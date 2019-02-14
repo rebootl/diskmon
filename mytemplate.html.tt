@@ -61,25 +61,26 @@
         [%# entry.date %]
       [%# END %]
     [%# END %]
-    [% FOREACH disk IN data.pairs %]
-      <p>Disk: <strong>[% disk.key %]</strong></p>
+    [% FOREACH disk IN data %]
+      <p>Disk: <strong>[% disk.name %]</strong></p>
       <h2>usage</h2>
       <div id="usage-box">
         [%# FOREACH part IN usage. %]
         <canvas id="usage-canvas-[% pair.key FILTER remove('\/') %]"></canvas>
       </div>
+
       <h2>status</h2>
       <table>
         <thead>
           <th></th>
-          [% FOREACH field IN config.status.fields %]
+          [% FOREACH field IN disk.status.0.fields %]
             <th><small class="thead">[% field.label %]
               <span class="thead-limit">(Limit: [% field.limit %])</span>
             </small></th>
           [% END %]
         </thead>
         <tbody>
-        [% FOREACH entry IN disk.value.status.reverse %]
+        [% FOREACH entry IN disk.status.reverse %]
           <tr>
             <th><small>[% entry.date %]</small></th>
             [% FOREACH field IN entry.fields %]
@@ -97,7 +98,7 @@
       </table>
     [% END %]
     <script>
-    const usage_data = [% usage_json %];
+    const data_json = [% data_json %];
     //console.log(usage_data["/dev/sda"][0]);
     const dev = "/dev/sda";
     const dev_id = dev.replace(/\//g, '');

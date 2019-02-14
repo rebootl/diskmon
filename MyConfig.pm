@@ -56,7 +56,7 @@ our @config = (
         {
           label => 'Airflow Temp. Cel.',
           name => 'Airflow_Temperature_Cel',
-          limit => 37
+          limit => 38
         },
       ]
     },

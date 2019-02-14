@@ -94,11 +94,13 @@
         push @{$_->{usage}}, shift @tmp;
       }
     }
+    close FH;
     my $usage = {
       dates => \@dates,
       parts => \@parts
     };
     print STDERR Dumper($usage);
+    return $usage;
   }
 
   sub load_status {
@@ -123,7 +125,10 @@
     while (my $row = <FH>) {
       chomp $row;
       my @tmp = split(/\|/, $row);
-      my $newhash = { date => shift @tmp };
+      my $newhash = {
+        date => shift @tmp,
+        fields => []
+      };
       foreach (@{$dev->{status}->{fields}}) {
         my @fields = ();
         my $value = shift @tmp;
@@ -137,17 +142,19 @@
             $alert = 'OK';
           }
         }
-        push @fields, {
+        push @{$newhash->{fields}}, {
+          label => $_->{'label'},
+          limit => $_->{'limit'},
           value => $value,
           alert => $alert
         };
-        @{$newhash}{fields} = \@fields;
+        #push @{$newhash}{fields}, \@fields;
       }
       #print STDERR Dumper($newhash);
       push @status, $newhash;
     }
-    print STDERR Dumper(\@status);
     close FH;
+    print STDERR Dumper(\@status);
     return \@status;
   }
 
@@ -157,17 +164,22 @@
     return if !ref $cgi;
 
     my @data = ();
+    my @data_json = ();
     foreach my $dev (@config) {
       #print STDERR Dumper($dev);
       my $usage = $self->load_usage($dev);
       my $status = $self->load_status($dev);
+      #my $usage_json = encode_json $usage;
       push @data, {
+        name => $dev->{'name'},
         usage => $usage,
-        status => $status,
+        status => $status
+      };
+      push @data_json, {
+        name => $dev->{'name'},
+        usage => $usage
       };
     }
-
-    #my $usage_json ....
 
     my $res;
     my $out = $cgi->header();
@@ -176,7 +188,7 @@
     {
       config => \@config,
       data => \@data,
-      # -> data json
+      data_json => encode_json \@data_json,
     },
     \$out,
     ) or die $tt->error;
