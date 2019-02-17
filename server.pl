@@ -81,7 +81,8 @@
       push @parts, {
         name => $_->{mountpoint},
         size => [],
-        usage => []
+        usage => [],
+        color => $_->{color}
       };
     }
     while (my $row = <FH>) {
@@ -99,7 +100,7 @@
       dates => \@dates,
       parts => \@parts
     };
-    print STDERR Dumper($usage);
+    #print STDERR Dumper($usage);
     return $usage;
   }
 
@@ -154,7 +155,7 @@
       push @status, $newhash;
     }
     close FH;
-    print STDERR Dumper(\@status);
+    #print STDERR Dumper(\@status);
     return \@status;
   }
 
@@ -169,7 +170,6 @@
       #print STDERR Dumper($dev);
       my $usage = $self->load_usage($dev);
       my $status = $self->load_status($dev);
-      #my $usage_json = encode_json $usage;
       push @data, {
         name => $dev->{'name'},
         usage => $usage,
@@ -180,6 +180,7 @@
         usage => $usage
       };
     }
+    print STDERR Dumper(@data);
 
     my $res;
     my $out = $cgi->header();

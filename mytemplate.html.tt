@@ -51,22 +51,37 @@
       .thead-limit {
         font-weight: normal;
       }
+      .usage-box {
+        display: flex;
+      }
+      .canvas-box {
+        /*background-color: #0e0e0e;
+        border: 1px solid #222;
+        min-width: 220px;
+        height: 150px;*/
+      }
+      canvas {
+        /*background-color: #0a0a0a;
+        border: 1px solid #222;*/
+        background-color: #0e0e0e;
+        border: 1px solid #222;
+      }
     </style>
   </head>
   <body>
     <h1>diskmon</h1>
-    [%# FOREACH disk IN data.pairs %]
-      [%# disk.key %]
-      [%# FOREACH entry IN disk.value.status %]
-        [%# entry.date %]
-      [%# END %]
-    [%# END %]
     [% FOREACH disk IN data %]
       <p>Disk: <strong>[% disk.name %]</strong></p>
+
       <h2>usage</h2>
-      <div id="usage-box">
-        [%# FOREACH part IN usage. %]
-        <canvas id="usage-canvas-[% pair.key FILTER remove('\/') %]"></canvas>
+      <p></p>
+      <div class="usage-box">
+      [% FOREACH part IN disk.usage.parts %]
+        <div class="canvas-box">
+          <canvas id="usage-canvas-[% disk.name FILTER remove('\/') %]-[% part.name FILTER remove('\/') %]"
+                  width="230" height="165"></canvas>
+        </div>
+      [% END %]
       </div>
 
       <h2>status</h2>
@@ -98,12 +113,129 @@
       </table>
     [% END %]
     <script>
-    const data_json = [% data_json %];
-    //console.log(usage_data["/dev/sda"][0]);
-    const dev = "/dev/sda";
-    const dev_id = dev.replace(/\//g, '');
-    const canv_base_id = 'usage-canvas-' + dev_id;
-    console.log(canv_base_id);
+    const data_json = '[% data_json %]';
+    const data = JSON.parse(data_json);
+    //console.log(data);
+
+    function draw_usage(canv_id, part, dates) {
+
+      const canvas = document.getElementById(canv_id);
+      if (canvas.getContext) {
+        const ctx = canvas.getContext('2d');
+
+        // draw graph box
+        const gbox_sx = 15;
+        const gbox_sy = 35;
+        const gbox_width = 200;
+        const gbox_height = 110;
+
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(gbox_sx, gbox_sy, gbox_width, gbox_height);
+
+
+        // draw some grid
+        // horizontal lines
+        const v_parts = 4;
+        const dy = gbox_height / v_parts;
+
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 3]);
+        ctx.beginPath();
+        for (let i = 1; i < v_parts; i++) {
+          ctx.moveTo(gbox_sx, gbox_sy + dy*i);
+          ctx.lineTo(gbox_sx + gbox_width, gbox_sy + dy*i);
+        }
+        ctx.stroke();
+
+        // horizontal markers
+        const h_parts = 30;
+        const dx = gbox_width / h_parts;
+
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        for (let i = 0; i < h_parts + 1; i++) {
+          ctx.moveTo(gbox_sx + dx*i, gbox_height + gbox_sy);
+          ctx.lineTo(gbox_sx + dx*i, gbox_height + gbox_sy - 5);
+        }
+        // axis y and x
+        ctx.lineWidth = 1;
+        ctx.moveTo(gbox_sx, gbox_height + gbox_sy);
+        ctx.lineTo(gbox_sx + gbox_width, gbox_height + gbox_sy);
+        ctx.moveTo(gbox_sx, gbox_sy);
+        ctx.lineTo(gbox_sx, gbox_sy + gbox_height);
+        ctx.stroke();
+
+        // draw the graph
+        const sizes = part.size.reverse();
+        const usages = part.usage.reverse();
+        const color = part.color;
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(gbox_sx + gbox_width, gbox_sy + gbox_height);
+        let last_sx = 0;
+        for (let i = 0; i < dates.length; i++) {
+          const size = sizes[i];
+          const usage = usages[i];
+          const fac_used = usage / size;
+          console.log(fac_used);
+          const usage_height = gbox_height * fac_used;
+
+          last_sx = gbox_sx + gbox_width - dx*i;
+          ctx.lineTo(
+            last_sx,
+            gbox_sy + gbox_height - usage_height
+          );
+        }
+        ctx.lineTo(last_sx, gbox_sy + gbox_height);
+        ctx.fillStyle = color + '11';
+        ctx.fill();
+        ctx.stroke();
+        // colored bottom line
+        ctx.beginPath()
+        ctx.lineWidth = 1;
+        ctx.moveTo(last_sx, gbox_sy + gbox_height);
+        ctx.lineTo(gbox_sx + gbox_width, gbox_sy + gbox_height);
+        ctx.stroke();
+
+        // labels
+        ctx.fillStyle = '#777';
+        ctx.font = '13px monospace';
+        ctx.fillText("Part.: " + part.name, 70, 15);
+        ctx.font = 'bold 13px monospace';
+        ctx.font = '13px monospace';
+        ctx.fillText(part.name, 125, 15)
+        ctx.fillText("usage", 3, gbox_sy + 60);
+        ctx.fillText(
+          "t",
+          gbox_sx + gbox_width/2 - 5,
+          gbox_sy + gbox_height + 13
+        );
+        // sizes
+        const usage_gib = Math.round(part.usage[0] / (1024 * 1024) * 10) / 10;
+        const size_gib = Math.round(part.size[0] / (1024 * 1024) * 10) / 10;
+        ctx.fillText(
+          "(" + usage_gib + "G/" + size_gib + "G)",
+          55,
+          30
+        );
+      }
+    }
+
+    for (const dev of data) {
+      const dev_id = dev.name.replace(/\//g, '');
+      const canv_base_id = 'usage-canvas-' + dev_id;
+      //console.log(canv_base_id);
+      //console.log(dev.usage);
+      for (const part of dev.usage.parts) {
+        const part_id = part.name.replace(/\//g, '');
+        const canv_id = canv_base_id + '-' + part_id;
+        //console.log(canv_id);
+        draw_usage(canv_id, part, dev.usage.dates);
+      }
+    }
     </script>
   </body>
 </html>
