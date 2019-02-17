@@ -66,6 +66,17 @@
         background-color: #0e0e0e;
         border: 1px solid #222;
       }
+      hr {
+        border: 0;
+        border-bottom: 1px solid #222;
+      }
+      .usage-box {
+        padding-top: 20px;
+        padding-bottom: 10px;
+      }
+      .status-box {
+        padding-bottom: 15px;
+      }
     </style>
   </head>
   <body>
@@ -74,8 +85,7 @@
       <p>Disk: <strong>[% disk.name %]</strong></p>
 
       <h2>usage</h2>
-      <p></p>
-      <div class="usage-box">
+      <div class="usage-box databox">
       [% FOREACH part IN disk.usage.parts %]
         <div class="canvas-box">
           <canvas id="usage-canvas-[% disk.name FILTER remove('\/') %]-[% part.name FILTER remove('\/') %]"
@@ -85,32 +95,35 @@
       </div>
 
       <h2>status</h2>
-      <table>
-        <thead>
-          <th></th>
-          [% FOREACH field IN disk.status.0.fields %]
-            <th><small class="thead">[% field.label %]
-              <span class="thead-limit">(Limit: [% field.limit %])</span>
-            </small></th>
-          [% END %]
-        </thead>
-        <tbody>
-        [% FOREACH entry IN disk.status.reverse %]
-          <tr>
-            <th><small>[% entry.date %]</small></th>
-            [% FOREACH field IN entry.fields %]
-              [% IF field.alert == 'ALERT' %]
-                <td class="alert">&#9888; [% field.value %] &#9888;</td>
-              [% ELSIF field.value == 'no data found' %]
-                <td>-</td>
-              [% ELSE %]
-                <td>[% field.value %]</td>
-              [% END %]
+      <div class="status-box databox">
+        <table>
+          <thead>
+            <th></th>
+            [% FOREACH field IN disk.status.0.fields %]
+              <th><small class="thead">[% field.label %]
+                <span class="thead-limit">(Limit: [% field.limit %])</span>
+              </small></th>
             [% END %]
-          </tr>
-        [% END %]
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+          [% FOREACH entry IN disk.status.reverse %]
+            <tr>
+              <th><small>[% entry.date %]</small></th>
+              [% FOREACH field IN entry.fields %]
+                [% IF field.alert == 'ALERT' %]
+                  <td class="alert">&#9888; [% field.value %] &#9888;</td>
+                [% ELSIF field.value == 'no data found' %]
+                  <td>-</td>
+                [% ELSE %]
+                  <td>[% field.value %]</td>
+                [% END %]
+              [% END %]
+            </tr>
+          [% END %]
+          </tbody>
+        </table>
+      </div>
+      <hr>
     [% END %]
     <script>
     const data_json = '[% data_json %]';
@@ -207,7 +220,13 @@
         ctx.font = 'bold 13px monospace';
         ctx.font = '13px monospace';
         ctx.fillText(part.name, 125, 15)
-        ctx.fillText("usage", 3, gbox_sy + 60);
+        // (rotate y-axis label)
+        ctx.save();
+        ctx.translate(10, gbox_sy + 75);
+        ctx.rotate( -Math.PI / 2 );
+        ctx.fillText("usage", 0, 0);
+        ctx.restore()
+        //
         ctx.fillText(
           "t",
           gbox_sx + gbox_width/2 - 5,
