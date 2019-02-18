@@ -77,10 +77,16 @@
       .status-box {
         padding-bottom: 15px;
       }
+      #timestamp {
+        position: absolute;
+        right: 10px;
+        top: 70px;
+      }
     </style>
   </head>
   <body>
     <h1>diskmon</h1>
+    <small id="timestamp"></small>
     [% FOREACH disk IN data %]
       <p>Disk: <strong>[% disk.name %]</strong></p>
 
@@ -217,8 +223,6 @@
         ctx.fillStyle = '#777';
         ctx.font = '13px monospace';
         ctx.fillText("Part.: " + part.name, 70, 15);
-        ctx.font = 'bold 13px monospace';
-        ctx.font = '13px monospace';
         ctx.fillText(part.name, 125, 15)
         // (rotate y-axis label)
         ctx.save();
@@ -255,6 +259,9 @@
         draw_usage(canv_id, part, dev.usage.dates);
       }
     }
+    const timest_el = document.getElementById('timestamp');
+    const date = new Date();
+    timest_el.textContent = date.toLocaleString();
     </script>
   </body>
 </html>
