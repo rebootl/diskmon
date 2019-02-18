@@ -180,7 +180,7 @@
         usage => $usage
       };
     }
-    print STDERR Dumper(@data);
+    #print STDERR Dumper(@data);
 
     my $res;
     my $out = $cgi->header();
