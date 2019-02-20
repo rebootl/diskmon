@@ -13,6 +13,7 @@ Using smartctl and df.
 ## Issues / Todo
 
 - limit graph points to n-days (30atm.)
+  ==> DONE
 
 - evtl. make n-days configurable
 

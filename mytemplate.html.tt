@@ -168,7 +168,7 @@
         ctx.stroke();
 
         // horizontal markers
-        const h_parts = 30;
+        const h_parts = 7;
         const dx = gbox_width / h_parts;
 
         ctx.setLineDash([]);
@@ -186,8 +186,8 @@
         ctx.stroke();
 
         // draw the graph
-        const sizes = part.size.reverse();
-        const usages = part.usage.reverse();
+        const sizes = part.size.reverse().slice(0, h_parts + 1);
+        const usages = part.usage.reverse().slice(0, h_parts + 1);
         const color = part.color;
 
         ctx.strokeStyle = color;
@@ -195,11 +195,11 @@
         ctx.beginPath();
         ctx.moveTo(gbox_sx + gbox_width, gbox_sy + gbox_height);
         let last_sx = 0;
-        for (let i = 0; i < dates.length; i++) {
+        for (let i = 0; i < sizes.length; i++) {
           const size = sizes[i];
           const usage = usages[i];
           const fac_used = usage / size;
-          console.log(fac_used);
+          //console.log(fac_used);
           const usage_height = gbox_height * fac_used;
 
           last_sx = gbox_sx + gbox_width - dx*i;
