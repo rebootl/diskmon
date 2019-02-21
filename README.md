@@ -1,4 +1,4 @@
-_Status: As of Feb. 2019, working on this, basic features are functional._
+_Status: active, WIP (as of Feb. 2019), functional (see Issues/ToDo)_
 
 # diskmon
 
