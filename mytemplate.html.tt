@@ -112,7 +112,7 @@
             [% END %]
           </thead>
           <tbody>
-          [% FOREACH entry IN disk.status.reverse %]
+          [% FOREACH entry IN disk.status %]
             <tr>
               <th><small>[% entry.date %]</small></th>
               [% FOREACH field IN entry.fields %]

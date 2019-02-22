@@ -4,7 +4,9 @@ _Status: active, WIP (as of Feb. 2019), functional (see Issues/ToDo)_
 
 Small harddisk monitoring script. Providing a simple webpage overview.
 
-Featuring a standalone webserver.
+Using Perl standalone webserver.
+
+Multiple disks are supported.
 
 Using smartctl and df.
 
@@ -12,12 +14,16 @@ Using smartctl and df.
 
 ## Issues / Todo
 
+- evtl. make n-days configurable
+  -> could be done in js
+
+### Done
+
 - limit graph points to n-days (30atm.)
   ==> DONE
 
-- evtl. make n-days configurable
-
 - limit numb. of status entries
+  ==> DONE
 
 ## Motivation
 

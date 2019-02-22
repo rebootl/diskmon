@@ -164,16 +164,23 @@
     my $cgi = shift;
     return if !ref $cgi;
 
+    my $n_stat_entr = 5;
+
     my @data = ();
     my @data_json = ();
     foreach my $dev (@config) {
       #print STDERR Dumper($dev);
       my $usage = $self->load_usage($dev);
       my $status = $self->load_status($dev);
+
+      my @status = reverse @{$status};
+      my @status_part = @status[0..$n_stat_entr-1];
+      #print STDERR Dumper(\@status);
+
       push @data, {
         name => $dev->{'name'},
         usage => $usage,
-        status => $status
+        status => \@status_part
       };
       push @data_json, {
         name => $dev->{'name'},
