@@ -168,7 +168,7 @@
         ctx.stroke();
 
         // horizontal markers
-        const h_parts = 7;
+        const h_parts = 14;
         const dx = gbox_width / h_parts;
 
         ctx.setLineDash([]);
@@ -251,7 +251,7 @@
       const dev_id = dev.name.replace(/\//g, '');
       const canv_base_id = 'usage-canvas-' + dev_id;
       //console.log(canv_base_id);
-      //console.log(dev.usage);
+      console.log(dev.usage);
       for (const part of dev.usage.parts) {
         const part_id = part.name.replace(/\//g, '');
         const canv_id = canv_base_id + '-' + part_id;

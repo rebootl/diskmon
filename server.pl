@@ -89,10 +89,16 @@
       chomp $row;
       my @tmp = split(/\|/, $row);
       push @dates, shift @tmp;
-      foreach (@parts) {
-        shift @tmp;
-        push @{$_->{size}}, shift @tmp;
-        push @{$_->{usage}}, shift @tmp;
+      while (scalar @tmp >= 3) {
+        foreach (@parts) {
+          last if (scalar @tmp == 0);
+          if ($tmp[0] eq $_->{name}) {
+            shift @tmp;
+            push @{$_->{size}}, shift @tmp;
+            push @{$_->{usage}}, shift @tmp;
+            next;
+          }
+        }
       }
     }
     close FH;

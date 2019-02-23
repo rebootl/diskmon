@@ -6,13 +6,17 @@ package MyConfig;
 use strict;
 use warnings;
 
+# Attention: Especially for status, the fields order matter for the file it's
+# written to !!!
+# That means it's not possible to change the field order as long as an existing
+# data file is used.
+
 # list of blockdevices w/ respective parameters
 our @config = (
   {
     name => '/dev/sda',
     status => {
       data_file => 'statusdat1.txt',
-      # the fields order matter for the file it's written to!!!
       fields => [
         {
           label => 'Reall. Sect. Ct.',
