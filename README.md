@@ -17,6 +17,8 @@ Using smartctl and df.
 - evtl. make n-days configurable
   -> could be done in js
 
+- make partition usage boxes wrap
+
 ### Done
 
 - limit graph points to n-days (30atm.)
