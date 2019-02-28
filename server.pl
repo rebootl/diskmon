@@ -80,8 +80,8 @@
     foreach (@{$dev->{usage}->{parts}}) {
       push @parts, {
         name => $_->{mountpoint},
-        size => [],
-        usage => [],
+        sizes => [],
+        usages => [],
         color => $_->{color}
       };
     }
@@ -94,8 +94,8 @@
           last if (scalar @tmp == 0);
           if ($tmp[0] eq $_->{name}) {
             shift @tmp;
-            push @{$_->{size}}, shift @tmp;
-            push @{$_->{usage}}, shift @tmp;
+            push @{$_->{sizes}}, shift @tmp;
+            push @{$_->{usages}}, shift @tmp;
             next;
           }
         }

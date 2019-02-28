@@ -14,12 +14,16 @@ Using smartctl and df.
 
 ## Issues / Todo
 
-- evtl. make n-days configurable
-  -> could be done in js
+- rename part.size etc.
 
 - make partition usage boxes wrap
 
+- create systemd file for server.pl
+
 ### Done
+
+- evtl. make n-days configurable
+  ==> DONE, all props to Luca for helping me debugging this
 
 - limit graph points to n-days (30atm.)
   ==> DONE
