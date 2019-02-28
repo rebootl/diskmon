@@ -58,6 +58,6 @@ urgh. So, that was the perfect little use-case for this project.
 
 Configuration in MyConfig.pm
 
-./diskmon.pl to collect data (e.g. use w/ cron).
+./diskmon.pl to collect data (e.g. use w/ cron, as root).
 
 ./server.pl to start the server (default port 6001).
