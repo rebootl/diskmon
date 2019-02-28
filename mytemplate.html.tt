@@ -53,6 +53,7 @@
       }
       .usage-box {
         display: flex;
+        flex-wrap: wrap;
       }
       .canvas-box {
         /*background-color: #0e0e0e;
@@ -274,7 +275,10 @@
         }
       }
     }
-    draw_all_usages(7);
+    // (get the selected value)
+    usage_days_sel = document.getElementById("usage-days-sel");
+    n_sel = parseInt(usage_days_sel.value);
+    draw_all_usages(n_sel);
 
     const timest_el = document.getElementById('timestamp');
     const date = new Date();

@@ -1,0 +1,17 @@
+[Unit]
+Description=diskmon server
+Documentation=https://github.com/rebootl/diskmon
+
+After=network.target
+Requires=network.target
+
+[Service]
+User=<user>
+ExecStart=<path-to-diskmon-dir>/server.pl
+
+# Restart/timeout
+#Restart=always
+#RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -14,13 +14,21 @@ Using smartctl and df.
 
 ## Issues / Todo
 
-- rename part.size etc.
-
-- make partition usage boxes wrap
-
-- create systemd file for server.pl
+- insert screenshots in readme
 
 ### Done
+
+- create systemd file for server.pl
+  ==> DONE
+
+- make partition usage boxes wrap
+  ==> DONE
+
+- make the usage days update on refresh
+  ==> DONE
+
+- rename part.size etc.
+  ==> DONE
 
 - evtl. make n-days configurable
   ==> DONE, all props to Luca for helping me debugging this
