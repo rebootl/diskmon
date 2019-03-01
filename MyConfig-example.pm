@@ -15,8 +15,8 @@ use warnings;
 our @config = (
   {
     name => '/dev/sda',
-    smartctl_opt => '-d sat',
     status => {
+      smartctl_opt => '-d sat',
       data_file => 'statusdat1.txt',
       fields => [
         {
