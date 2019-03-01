@@ -100,7 +100,10 @@
             next;
           }
           # (prevent infinite loop)
-          last if ($c > 100);
+          if ($c > 100) {
+            print STDERR "Warning: inf. loop in usage, check config!"
+            last;
+          }
           $c++;
         }
       }
