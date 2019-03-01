@@ -90,7 +90,8 @@
       my @tmp = split(/\|/, $row);
       push @dates, shift @tmp;
       my $c = 0;
-      while (scalar @tmp >= 3) {
+      my $stoploop = 0;
+      while (scalar @tmp >= 3 and !$stoploop) {
         foreach (@parts) {
           last if (scalar @tmp == 0);
           if ($tmp[0] eq $_->{name}) {
@@ -102,6 +103,7 @@
           # (prevent infinite loop)
           if ($c > 100) {
             print STDERR "Warning: inf. loop in usage, check config!";
+            $stoploop = 1;
             last;
           }
           $c++;
