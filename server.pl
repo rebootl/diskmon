@@ -21,10 +21,10 @@
   my @config = @MyConfig::config;
 
   my %dispatch = (
-  '/' => \&myresp,
-  #'/example_form' => \&myresp,
-  #'/' => \&resp_hello,
-  # ...
+    '/' => \&myresp,
+    #'/example_form' => \&myresp,
+    #'/' => \&resp_hello,
+    # ...
   );
 
   my $tt  = Template->new({
@@ -89,6 +89,7 @@
       chomp $row;
       my @tmp = split(/\|/, $row);
       push @dates, shift @tmp;
+      my $c = 0;
       while (scalar @tmp >= 3) {
         foreach (@parts) {
           last if (scalar @tmp == 0);
@@ -98,6 +99,9 @@
             push @{$_->{usages}}, shift @tmp;
             next;
           }
+          # (prevent infinite loop)
+          last if ($c > 100);
+          $c++;
         }
       }
     }
