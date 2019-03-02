@@ -102,7 +102,7 @@
           }
           # (prevent infinite loop)
           if ($c > 100) {
-            print STDERR "Warning: inf. loop in usage, check config!";
+            print STDERR "Warning: inf. loop in usage, check config!\n";
             $stoploop = 1;
             last;
           }

@@ -8,6 +8,7 @@ Requires=network.target
 [Service]
 User=<user>
 ExecStart=<path-to-diskmon-dir>/server.pl
+Type=forking
 
 # Restart/timeout
 #Restart=always
