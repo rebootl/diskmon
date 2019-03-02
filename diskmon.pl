@@ -13,7 +13,7 @@ my @config = @MyConfig::config;
 sub scan_status {
   my $dev = shift;
   my $status = $dev->{status};
-  my $result = `smartctl -A $status->{smartctl_opt} $dev->{name}`;
+  my $result = `/usr/sbin/smartctl -A $status->{smartctl_opt} $dev->{name}`;
   my $data = "";
   foreach my $field (@{$status->{fields}}) {
     #print STDERR $field->{name};
