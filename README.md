@@ -10,7 +10,7 @@ Multiple disks are supported.
 
 Using smartctl and df.
 
-![screenshot](screenshots/diskmon-screen1.png)
+![screenshot](screenshots/diskmon-screen1-a.png)
 
 ## Usage
 
